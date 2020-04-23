@@ -1,0 +1,24 @@
+#sideMenu {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #3F403F;
+}
+
+#content {
+    margin-left: 200px;
+}
+
+#sideMenu > a {
+    color: #DBDBDB;
+    padding: 16px;
+    text-decoration: none;
+    display: block;
+}
+
+#sideMenu > a:hover {
+    background-color: #DBDBDB;
+    color: #3F403F;
+}

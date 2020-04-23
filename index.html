@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TerrariaBot</title>
+        <link rel="stylesheet" type="text/css" href="css/index.css">
+        <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    </head>
+    <body>
+        <div id="sideMenu">
+            <a href="#welcome">Introduction</a>
+            <a href="#quickStart">Quick Start</a>
+            <a href="#usingSteam">Connecting with Steam</a>
+            <a href="#playerInformation">PlayerInformation</a>
+            <a href="#clientEvents">Client Events</a>
+            <a href="#clientMethods">Client Methods</a>
+            <a href="#selfPlayerMethods">Self Player Methods</a>
+            <a href="#playerMethods">Player Methods</a>
+        </div>
+        <div id="content">
+            <h2 id="welcome">Welcome on TerrariaBot documentation</h2>
+            TerrariaBot is a project that have for aim to let people easily create bot in C# for the game Terraria.<br/>
+            This project is still in an early stage of development.<br/>
+            <br/>
+            You can access the GitHub page here: <a href="https://github.com/Xwilarg/TerrariaBot">https://github.com/Xwilarg/TerrariaBot</a><br/>
+            And on NuGet here: <a href="https://www.nuget.org/packages/TerrariaBot/">https://www.nuget.org/packages/TerrariaBot/</a><br/>
+            If you need additional help you can come ask your questions on <a href="https://discord.gg/H6wMRYV">Discord</a> or open an issue on <a href="https://github.com/Xwilarg/TerrariaBot/issues">GitHub</a><br/>
+            <br/>
+            <hr/>
+            <h2 id="quickStart">Quick Start</h2>
+            To begin with instantiate a new IPClient, no parameter are needed
+            <pre class="prettyprint">
+IPClient client = new IPClient();</pre>
+            Once this is done, you can prepare all your callbacks (see section below).
+            Then just connect to the server using
+            <pre class="prettyprint">
+client.ConnectWithIP(string ip, PlayerInformation playerInfos, string serverPassword = "");</pre>
+            The first argument is the IP of your server and the second the information about the appearance of your bot.<br/>
+            If your server need a password you can write at as the optional 3rd argument of the ConnectWithIP function.<br/>
+            When you are done with that, see the sections below for more information on how to interact with the library.<br/>
+            <br/>
+            <hr/>
+            <h2 id="usingSteam">Connecting with Steam instead of direct IP</h2>
+            The bot can also connect using your Steam account instead of a direct IP.<br/>
+            For that you'll need 2 dependencies:<br/>
+            <ul>
+                <li>TerrariaBot.Steam (NuGet package not available yet)</li>
+                <li>Steamworks.NET, you can find the latest release <a href="https://github.com/rlabrecque/Steamworks.NET/releases">here</a></li>
+            </ul>
+            You'll also need to add steam_api64.dll and Steamworks.NET.dll next to your executable.<br/>
+            Instead of instantiating with a IPClient and using ConnectWithIP you need to use a SteamClient and connect with ConnectWithSteamId.<br/>
+            <pre class="prettyprint">
+client.ConnectWithIP(ulong friendSteamId, PlayerInformation playerInfos, string serverPassword = "");</pre>
+            The first argument is your friend Steam ID (he must be in your friend list), the others ones are the same as ConnectWithIP.
+            <br/>
+            <hr/>
+            <h2 id="playerInformation">PlayerInformation</h2>
+            PlayerInformation is a struct allowing to define how your character will be when connecting.
+            <pre class="prettyprint">
+public PlayerInformation(string name, byte hairVariant, Color hairColor, Color skinColor, Color eyesColor, Color shirtColor, Color underShirtColor, Color pantsColor, Color shoesColor, PlayerDifficulty difficulty)</pre>
+            The arguments are your name, your hair style, all the colors of your clothes and the difficulty you're player will be in.<br/>
+            A Color is a struct that take the red, green and blue color in it constructor.<br/>
+            If you don't want to bother with all of that you can use the static function GetRandomPlayer
+            <pre class="prettyprint">
+public static PlayerInformation GetRandomPlayer(string name, PlayerDifficulty difficulty)</pre>
+            This will take a random value for all colors, you then just need to give a name and difficulty.<br/>
+            When you spawn, your base health will be 100 and base mana will be 20.<br/>
+            You can change that using
+            <pre class="prettyprint">
+public void SetHealth(short value)</pre>
+            And
+            <pre class="prettyprint">
+public void SetMana(short value)</pre>
+            You just need to give them the new value you want and it'll change your player base health/mana.<br/>
+            <br/>
+            <hr/>
+            <h2 id="clientEvents">Client events</h2>
+            After creating a new client, you can subscribe to various events:<br/>
+            <br/>
+            ServerJoined fires an event when your player join the server. The current player is given in parameter.
+            <pre class="prettyprint">
+public event Action<PlayerSelf> ServerJoined;</pre>
+            <br/>
+            NewPlayerJoined fires an event when a new player join the server. When the player join the server, it's also called for each players that are already here.
+            <pre class="prettyprint">
+public event Action<Player> NewPlayerJoined;</pre>
+            <br/>
+            Log fires an event when any message is sent from the library. The first argument is used to tell if the message is a debug message, information, warning or error.
+            <pre class="prettyprint">
+public event Action<LogLevel, string> Log;</pre>
+            <br/>
+            ChatMessageReceived fires an event when a message is sent in the in-game chat.
+            <pre class="prettyprint">
+public event Action<Player, string> ChatMessageReceived;</pre>
+            <br/>
+            PVPStatusChanged fires an event when someone changes his PVP status.
+            <pre class="prettyprint">
+public event Action<Player, bool> PVPStatusChanged;</pre>
+            <br/>
+            TeamStatusChanged fires an event when someone changes his team.
+            <pre class="prettyprint">
+public event Action<Player, Team> TeamStatusChanged;</pre>
+            <br/>
+            PlayerPositionUpdate fires an event when a player change his position.
+            <pre class="prettyprint">
+public event Action<Player, Vector2> PlayerPositionUpdate;</pre>
+            <br/>
+            <hr/>
+            <h2 id="clientMethods">Client methods</h2>
+            There are others methodes you can access through the client<br/>
+            <br/>
+            GetPlayerSelf returns your player.
+            <pre class="prettyprint">
+public PlayerSelf GetPlayerSelf()</pre>
+            <br/>
+            GetAllPlayers returns all the players.
+            <pre class="prettyprint">
+public Player[] GetAllPlayers()</pre>
+            <br/>
+            GetPlayer returns a player given it ID.
+            <pre class="prettyprint">
+public Player GetPlayer(byte id)</pre>
+            <br/>
+            <hr/>
+            <h2 id="selfPlayerMethods">SelfPlayer methods</h2>
+            The following methods can only be called on your player<br/>
+            <br/>
+            Teleport change the location of your player.
+            <pre class="prettyprint">
+public void Teleport(float x, float y)
+public void Teleport(Vector2 pos)</pre>
+            <br/>
+            DoAction allow the player to move by emulating a key press. For now this function doesn't work properly.
+            <pre class="prettyprint">
+public void DoAction(params PlayerAction[] actions)</pre>
+            <br/>
+            JoinTeam change the team of your player.
+            <pre class="prettyprint">
+public void JoinTeam(Team teamId)</pre>
+            <br/>
+            TogglePVP enable or disable PVP for your player.
+            <pre class="prettyprint">
+public void TogglePVP(bool status)</pre>
+            <br/>
+            SendChatMessage send a message in the in-game chat.
+            <pre class="prettyprint">
+public void SendChatMessage(string message)</pre>
+            <br/>
+            <hr/>
+            <h2 id="playerMethods">Player methods</h2>
+            The following methods can be called on all players (including your own)<br/>
+            <br/>
+            GetSlot returns the ID of the player.
+            <pre class="prettyprint">
+public byte GetSlot()</pre>
+            <br/>
+            GetPosition returns the position of the player.
+            <pre class="prettyprint">
+public Vector2 GetPosition())</pre>
+            <br/>
+            GetName returns the name of the player.
+            <pre class="prettyprint">
+public string GetName()</pre>
+        </div>
+</html>
